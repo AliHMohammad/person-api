@@ -3,8 +3,15 @@ package dk.kea.personapi.services;
 
 import dk.kea.personapi.dtos.PersonRequestDTO;
 import dk.kea.personapi.dtos.PersonResponseDTO;
+import dk.kea.personapi.dtos.api.AgifyResponseDTO;
+import dk.kea.personapi.dtos.api.GenderizeResponseDTO;
+import dk.kea.personapi.dtos.api.NationalizeResponseDTO;
 import dk.kea.personapi.entities.Person;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PersonService {
@@ -14,31 +21,62 @@ public class PersonService {
     private final GenderizeService genderizeService;
     private final NationalizeService nationalizeService;
 
+    private final Map<String, PersonResponseDTO> personCache;
+
     public PersonService(AgifyService agifyService, GenderizeService genderizeService, NationalizeService nationalizeService) {
         this.agifyService = agifyService;
         this.genderizeService = genderizeService;
         this.nationalizeService = nationalizeService;
+        this.personCache = new HashMap<>();
     }
 
-    public PersonResponseDTO getPerson(PersonRequestDTO personRequestDTO) {
-        return null;
+    public PersonResponseDTO getPerson(String firstName, Optional<String> middleName, String lastName) {
+
+        var personInCache = findPersonInCache(firstName, lastName);
+
+        if (personInCache != null){
+            return personInCache;
+        }
+
+        Person personEntity = new Person(firstName, middleName.orElse(null), lastName);
+
+        AgifyResponseDTO agifyResponse = agifyService.getAgifyByFirstName(personEntity.getFirstName());
+        GenderizeResponseDTO genderizeResponse = genderizeService.getGenderByFirstName(personEntity.getFirstName());
+        NationalizeResponseDTO nationalizeResponse = nationalizeService.getNationalityByLastName(personEntity.getLastName());
+
+        PersonResponseDTO personResponseDTO = toDTO(personEntity, agifyResponse, genderizeResponse, nationalizeResponse);
+        return savePersonInCache(personResponseDTO);
     }
 
-
-    private Person toEntity(PersonRequestDTO personRequestDTO) {
-        return new Person(
-                personRequestDTO.firstName(),
-                personRequestDTO.middleName(),
-                personRequestDTO.lastName()
-        );
+    private PersonResponseDTO findPersonInCache(String firstName, String lastName) {
+        String key = firstName.toUpperCase() + "-" + lastName.toUpperCase();
+        return personCache.get(key);
     }
 
-    /*private PersonResponseDTO toDTO(Person person) {
+    private PersonResponseDTO savePersonInCache(PersonResponseDTO personResponseDTO) {
+        String key = personResponseDTO.firstName().toUpperCase() + "-" + personResponseDTO.lastName().toUpperCase();
+        personCache.put(key, personResponseDTO);
+        return personResponseDTO;
+    }
+
+    private PersonResponseDTO toDTO(
+            Person person,
+            AgifyResponseDTO agifyResponseDTO,
+            GenderizeResponseDTO genderizeResponseDTO,
+            NationalizeResponseDTO nationalizeResponseDTO
+    ) {
         return new PersonResponseDTO(
                 person.getFullName(),
                 person.getFirstName(),
                 person.getMiddleName(),
-                person.getLastName()
+                person.getLastName(),
+                genderizeResponseDTO.gender(),
+                genderizeResponseDTO.probability(),
+                agifyResponseDTO.age(),
+                // Agify API returnerer null ved probability.
+                (agifyResponseDTO.probability() == null ? null : agifyResponseDTO.probability()),
+                nationalizeResponseDTO.country().get(0).country_id(),
+                nationalizeResponseDTO.country().get(0).probability()
         );
-    }*/
+    }
 }

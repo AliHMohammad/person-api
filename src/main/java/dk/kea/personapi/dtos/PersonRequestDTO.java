@@ -4,11 +4,10 @@ import jakarta.validation.constraints.NotNull;
 
 public record PersonRequestDTO(
 
-        @NotNull
+        @NotNull(message = "firstName must be specified")
         String firstName,
         String middleName,
-
-        @NotNull
+        @NotNull(message = "lastName must be specified")
         String lastName
 ) {
 }

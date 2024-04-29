@@ -6,10 +6,10 @@ public record PersonResponseDTO(
         String middleName,
         String lastName,
         String gender,
-        double genderProbability,
-        int age,
-        double ageProbability,
+        Double genderProbability,
+        Integer age,
+        Double ageProbability,
         String country,
-        double countryProbability
+        Double countryProbability
 ) {
 }

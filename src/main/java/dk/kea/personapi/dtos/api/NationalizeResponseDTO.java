@@ -6,12 +6,8 @@ public record NationalizeResponseDTO(
         Integer count,
         String name,
         List<CountryResponseDTO> country
-
 ) {
 }
 
-record CountryResponseDTO(
-        String country_id,
-        Double probability
-) {}
+
 
