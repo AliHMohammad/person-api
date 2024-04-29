@@ -31,14 +31,13 @@ public class PersonService {
     }
 
     public PersonResponseDTO getPerson(String firstName, Optional<String> middleName, String lastName) {
-
-        var personInCache = findPersonInCache(firstName, lastName);
+        Person personEntity = new Person(firstName, middleName.orElse(null), lastName);
+        var personInCache = findPersonInCache(personEntity.getFullName());
 
         if (personInCache != null){
             return personInCache;
         }
 
-        Person personEntity = new Person(firstName, middleName.orElse(null), lastName);
 
         AgifyResponseDTO agifyResponse = agifyService.getAgifyByFirstName(personEntity.getFirstName());
         GenderizeResponseDTO genderizeResponse = genderizeService.getGenderByFirstName(personEntity.getFirstName());
@@ -48,13 +47,13 @@ public class PersonService {
         return savePersonInCache(personResponseDTO);
     }
 
-    private PersonResponseDTO findPersonInCache(String firstName, String lastName) {
-        String key = firstName.toUpperCase() + "-" + lastName.toUpperCase();
+    private PersonResponseDTO findPersonInCache(String fullName) {
+        String key = fullName.toUpperCase();
         return personCache.get(key);
     }
 
     private PersonResponseDTO savePersonInCache(PersonResponseDTO personResponseDTO) {
-        String key = personResponseDTO.firstName().toUpperCase() + "-" + personResponseDTO.lastName().toUpperCase();
+        String key = personResponseDTO.fullName().toUpperCase();
         personCache.put(key, personResponseDTO);
         return personResponseDTO;
     }
