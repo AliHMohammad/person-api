@@ -39,7 +39,6 @@ resource "azurerm_linux_web_app" "this" {
     JDBC_PASSWORD     = var.DB-PASSWORD
   }
 
-
 }
 
 resource "azurerm_app_service_source_control" "this" {
