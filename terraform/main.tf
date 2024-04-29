@@ -10,7 +10,7 @@ resource "azurerm_service_plan" "this" {
 }
 
 resource "azurerm_resource_group" "this" {
-  location = "Sweden Central"
+  location = "North Europe"
   name     = "${var.name}-springboot-resource-grp"
 }
 
@@ -20,14 +20,26 @@ resource "azurerm_linux_web_app" "this" {
   resource_group_name = azurerm_resource_group.this.name
   service_plan_id     = azurerm_service_plan.this.id
 
+  enabled = false
+
+  app_settings = {
+    JDBC_DATABASE_URL = var.JDBC-URL
+    JDBC_USERNAME     = var.DB-USER
+    JDBC_PASSWORD     = var.DB-PASSWORD
+  }
+
+  logs {
+    detailed_error_messages = true
+  }
+
 
   site_config {
-    application_stack {
+    /*application_stack {
       java_server         = "JAVA"
       java_server_version = "java17"
       java_version        = 17
+    }*/
 
-    }
     always_on = false
   }
 }
