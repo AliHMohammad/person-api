@@ -20,7 +20,7 @@ resource "azurerm_linux_web_app" "this" {
   resource_group_name = azurerm_resource_group.this.name
   service_plan_id     = azurerm_service_plan.this.id
 
-  enabled = false
+
 
   app_settings = {
     JDBC_DATABASE_URL = var.JDBC-URL
@@ -34,11 +34,11 @@ resource "azurerm_linux_web_app" "this" {
 
 
   site_config {
-    /*application_stack {
+    application_stack {
       java_server         = "JAVA"
       java_server_version = "java17"
       java_version        = 17
-    }*/
+    }
 
     always_on = false
   }
