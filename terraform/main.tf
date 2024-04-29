@@ -10,7 +10,7 @@ resource "azurerm_service_plan" "this" {
 }
 
 resource "azurerm_resource_group" "this" {
-  location = "North Europe"
+  location = "Sweden Central"
   name     = "${var.name}-springboot-resource-grp"
 }
 
