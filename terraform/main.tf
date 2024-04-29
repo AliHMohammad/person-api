@@ -20,18 +20,11 @@ resource "azurerm_linux_web_app" "this" {
   resource_group_name = azurerm_resource_group.this.name
   service_plan_id     = azurerm_service_plan.this.id
 
-
-
   app_settings = {
     JDBC_DATABASE_URL = var.JDBC-URL
     JDBC_USERNAME     = var.DB-USER
     JDBC_PASSWORD     = var.DB-PASSWORD
   }
-
-  logs {
-    detailed_error_messages = true
-  }
-
 
   site_config {
     application_stack {
@@ -39,7 +32,12 @@ resource "azurerm_linux_web_app" "this" {
       java_server_version = "java17"
       java_version        = 17
     }
-
     always_on = false
   }
+}
+
+resource "azurerm_app_service_source_control" "this" {
+  app_id   = azurerm_linux_web_app.this.id
+  repo_url = "https://github.com/AliHMohammad/person-api"
+  branch   = "main"
 }
