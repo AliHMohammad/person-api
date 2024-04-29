@@ -3,7 +3,7 @@
 
 variable "name" {
   description = "prefix variable used for naming resources"
-  default     = "almo-kea-tf"
+  default     = "almo-springboot"
   type        = string
 }
 
