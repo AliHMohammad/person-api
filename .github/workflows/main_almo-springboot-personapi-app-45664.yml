@@ -21,7 +21,7 @@ jobs:
     - name: Set up Java version
       uses: actions/setup-java@v1
       with:
-        java-version: '3.2.5'
+        java-version: '17'
 
     - name: Build with Maven
       run: mvn clean install
@@ -31,6 +31,6 @@ jobs:
       with:
         app-name: almo-springboot-personapi-app-45664
         slot-name: Production
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3E0A25721FB14D638D66D721CD6AC14E }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_77754CD3CB694EE6A8B67AA83681158D }}
         package: ${{ github.workspace }}/target/*.jar
 
